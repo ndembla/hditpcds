@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "clusters_name": {
+            "defaultValue": "hdinsight-test",
+            "type": "String"
+        },
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.HDInsight/clusters",
+            "apiVersion": "2018-06-01-preview",
+            "name": "[parameters('clusters_name')]",
+            "location": "West US 2",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "/subscriptions/6058f445-7810-4ec0-8fbe-45296afaf6f7/resourcegroups/ndembla-hdinsightrg/providers/microsoft.managedidentity/userassignedidentities/ndembla-hdinsightid": {
+                        "principalId": "133a22dc-e9e3-40b6-bb8f-7c4815c5f1a8",
+                        "tenantId": "f636e1c4-18a5-4f8a-9e41-e247bae1387d"
+                    }
+                }
+            },
+            "properties": {
+                "clusterVersion": "4.0.2000.1",
+                "osType": "Linux",
+                "clusterDefinition": {
+                    "blueprint": "https://blueprints.azurehdinsight.net/interactivehive-4.0.2000.1.2007270451.json",
+                    "kind": "INTERACTIVEHIVE",
+                    "componentVersion": {
+                        "InteractiveHive": "3.1"
+                    }
+                },
+                "computeProfile": {
+                    "roles": [
+                        {
+                            "name": "headnode",
+                            "targetInstanceCount": 2,
+                            "hardwareProfile": {
+                                "vmSize": "standard_d13_v2"
+                            },
+                            "osProfile": {
+                                "linuxOperatingSystemProfile": {
+                                    "username": "sshuser"
+                                }
+                            }
+                        },
+                        {
+                            "name": "workernode",
+                            "targetInstanceCount": 1,
+                            "hardwareProfile": {
+                                "vmSize": "standard_e16_v3"
+                            },
+                            "osProfile": {
+                                "linuxOperatingSystemProfile": {
+                                    "username": "sshuser"
+                                }
+                            }
+                        },
+                        {
+                            "name": "zookeepernode",
+                            "targetInstanceCount": 3,
+                            "hardwareProfile": {
+                                "vmSize": "standard_a4_v2"
+                            },
+                            "osProfile": {
+                                "linuxOperatingSystemProfile": {
+                                    "username": "sshuser"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "tier": "standard",
+                "encryptionInTransitProperties": {
+                    "isEncryptionInTransitEnabled": false
+                },
+                "minSupportedTlsVersion": "1.2"
+            }
+        }
+    ]
+}
